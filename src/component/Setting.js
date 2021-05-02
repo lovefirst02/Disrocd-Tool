@@ -52,11 +52,7 @@ class DrawerForm extends React.Component {
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item name='Channel' label='Channel'>
-                  <Input
-                    onKeyDown={this.props.onKeyDown}
-                    onChange={this.props.onChange}
-                    placeholder='Please enter user Channel'
-                  />
+                  <Input onKeyDown={this.props.onKeyDown} placeholder='Please enter user Channel' />
                 </Form.Item>
               </Col>
               <Col span={12}>

@@ -15,6 +15,7 @@ function App(props) {
       </Menu.Item>
       <Menu.Item onClick={props.onDebug}>開發</Menu.Item>
       <Menu.Item onClick={props.onSave}>保存</Menu.Item>
+      <Menu.Item onClick={props.onCookie}>Delete Cookie</Menu.Item>
     </Menu>
   );
 

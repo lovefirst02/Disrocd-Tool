@@ -3,6 +3,7 @@ import LoginIcon from '../image/discord.png';
 import './Login.css';
 import { Progress } from 'antd';
 const { ipcRenderer, remote } = window.require('electron');
+const session = window.require('electron').remote.session;
 const BrowserWindow = remote.BrowserWindow;
 const DiscordOauth2 = window.require('discord-oauth2');
 const oauth = new DiscordOauth2();
@@ -20,11 +21,14 @@ function Login() {
   //Node JS Sleep
   const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
+  const cookie = { url: 'http://discord.com/', name: 'dc-tool', expirationDate: Math.floor(new Date() / 1000) + 86400 };
+
   //驗證帳號是否在Server裡面
   const handleAuth = (data) => {
     if (JSON.stringify(data).includes('496860072383610890')) {
       setPercent(75);
       setAccess(true);
+      session.defaultSession.cookies.set(cookie);
       timer(3000).then(() => {
         setPercent(100);
         openMain();
@@ -77,6 +81,25 @@ function Login() {
     }
   }, [code]);
 
+  // useEffect(() => {
+  //   session.defaultSession.cookies.get({ name: 'Discord-Tool' }).then((cookies) => {
+  //     if (cookies.length > 0) {
+  //       setCode(cookies.value);
+  //     }
+  //   });
+  // }, []);
+
+  const getCookies = () => {
+    session.defaultSession.cookies
+      .get({ name: 'DiscordTool' })
+      .then((cookies) => {
+        console.log(cookies);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   //打開新視窗，使用ＤＩＳＣＯＲＤ登入
   const openLogin = () => {
     let win = new BrowserWindow({ width: 800, height: 600 });
@@ -107,6 +130,9 @@ function Login() {
         <a onClick={openLogin}>
           <img src={LoginIcon} />
         </a>
+      </div>
+      <div>
+        <button onClick={getCookies}>test</button>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { UserOutlined, PictureOutlined, CompassOutlined, ExportOutlined } from '
 import Menu from '../component/Menu';
 import Setting from '../component/Setting';
 import Clear from '../component/Clear';
+import WindowTop from '../component/windowTop/index';
 import { Channel } from 'discord.js';
 const { Text, Link } = Typography;
 const { Meta } = Card;
@@ -12,6 +13,8 @@ const { Header, Footer, Sider, Content } = Layout;
 const { ipcRenderer, shell, remote } = window.require('electron');
 // const app = window.require('electron').remote;
 const app = window.require('electron').remote.app;
+const session = window.require('electron').remote.session;
+
 const isDev = remote.require('electron-is-dev');
 const fs = remote.require('fs');
 const path = remote.require('path');
@@ -24,6 +27,8 @@ const saveConfig = require('../script/saveConfig');
 const source = isDev
   ? `${path.join(remote.app.getAppPath(), '/Config.json')}`
   : `${path.join(remote.app.getAppPath(), '../Config.json')}`;
+const DiscordOauth2 = window.require('discord-oauth2');
+const oauth = new DiscordOauth2();
 
 //electron的remote API可以讓渲染進程使用主進程的API
 
@@ -51,6 +56,7 @@ function App() {
     filterKeywordVisible: false,
   });
   const [manualStatus, setManualStatus] = useState(false);
+  const [settingValue, setSettingValue] = useState('');
 
   //定義test並且使用ipcRenderer與主進程通信
   //這段主要是讓Discord Client ＲＵＮ起來
@@ -390,6 +396,7 @@ function App() {
           return;
         }
         setChannel((old) => [e.target.value, ...old]);
+        setSettingValue('');
         notification['success']({
           message: '成功將頻道加入監控Channel',
         });
@@ -539,6 +546,19 @@ function App() {
     console.log(cont);
   };
 
+  //嘗試刪除cookies,與檢視cookies
+  const testDeleteCookies = () => {
+    session.defaultSession.cookies.remove('http://discord.com/', 'dc-tool');
+    session.defaultSession.cookies
+      .get({ name: 'Discord-Tool' })
+      .then((cookies) => {
+        console.log(cookies);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   //使用系統預設瀏覽器打開連結
   //使用electron shell api
   const openLink = (e) => {
@@ -549,6 +569,7 @@ function App() {
   //以下是ＪＳＸ
   return (
     <div className='App'>
+      {/* <WindowTop /> */}
       <Layout style={{ backgroundColor: 'white' }}>
         <Header style={{ position: 'fixed', zIndex: 1, backgroundColor: 'white' }}>
           <Menu
@@ -598,7 +619,7 @@ function App() {
             登出
           </Button>
           <Setting onKeyDown={handleSetting} />
-          <Clear onDebug={t} onSave={save} onManual={manualInvite} onClick={handleClear} />
+          <Clear onDebug={t} onSave={save} onManual={manualInvite} onClick={handleClear} onCookie={testDeleteCookies} />
         </Header>
       </Layout>
       <Layout
