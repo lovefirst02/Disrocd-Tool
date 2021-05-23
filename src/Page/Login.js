@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LoginIcon from '../image/discord.png';
 import './Login.css';
 import { Progress } from 'antd';
+require('dotenv').config()
 const { ipcRenderer, remote } = window.require('electron');
 const session = window.require('electron').remote.session;
 const BrowserWindow = remote.BrowserWindow;
@@ -58,8 +59,8 @@ function Login() {
     setPercent(0);
     oauth
       .tokenRequest({
-        clientId: '736909580612665384',
-        clientSecret: 'EHFM6z1p9YMKkPOg2LU3eg6zRo99cAR8',
+        clientId: process.env.OAUTHCLIENID,
+        clientSecret: process.env.OAUTHCLIENSECRET,
 
         code: code,
         scope: 'identify guilds',
